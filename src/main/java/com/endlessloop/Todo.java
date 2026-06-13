@@ -1,22 +1,29 @@
 package com.endlessloop;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity 
 public class Todo {
+
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
+    
     private String title;
     private boolean completed;
 
-    // Boş Constructor (Spring'in verileri işleyebilmesi için şart)
     public Todo() {
     }
 
-    // Dolu Constructor (Yeni görevleri oluşturmak için)
     public Todo(Long id, String title, boolean completed) {
         this.id = id;
         this.title = title;
         this.completed = completed;
     }
 
-    // GETTER ve SETTER Metotları
     public Long getId() {
         return id;
     }

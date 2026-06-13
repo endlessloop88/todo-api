@@ -3,60 +3,55 @@ package com.endlessloop;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
 @RestController
-@RequestMapping("/api/todos") // Tüm isteklerin ana adresi: localhost:8080/api/todos
+@RequestMapping("/api/todos")
+@CrossOrigin(origins = "*") 
 public class TodoApiApplication {
 
-	// Geçici hafıza (Veritabanı yerine kullanıyoruz)
-	private final List<Todo> todoList = new ArrayList<>();
-	private Long idCounter = 1L; // ID'leri otomatik 1, 2, 3 diye artırmak için
+    private final TodoRepository todoRepository;
 
-	public static void main(String[] args) {
-		SpringApplication.run(TodoApiApplication.class, args);
-	}
+    public TodoApiApplication(TodoRepository todoRepository) {
+        this.todoRepository = todoRepository;
+    }
 
-	// 1. TÜM GÖREVLERİ LİSTELE (GET) -> localhost:8080/api/todos
-	@GetMapping
-	public List<Todo> getAllTodos() {
-		return todoList;
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(TodoApiApplication.class, args);
+    }
 
-	// 2. YENİ GÖREV EKLE (POST) -> localhost:8080/api/todos
-	@PostMapping
-	public Todo createTodo(@RequestBody Todo todo) {
-		todo.setId(idCounter++); // Göreve otomatik ID veriyoruz
-		todoList.add(todo);
-		return todo;
-	}
+    // 1. Tüm Görevleri Listele
+    @GetMapping
+    public List<Todo> getAllTodos() {
+        return todoRepository.findAll();
+    }
 
-	// 3. GÖREVİ SİL (DELETE) -> localhost:8080/api/todos/1
-	@DeleteMapping("/{id}")
-	public String deleteTodo(@PathVariable Long id) {
-		// Listede bu ID'ye sahip görevi bul ve sil
-		boolean removed = todoList.removeIf(todo -> todo.getId().equals(id));
-		
-		if (removed) {
-			return id + " numaralı görev başarıyla silindi!";
-		} else {
-			return id + " numaralı görev bulunamadı.";
-		}
-	}
+    // 2. Yeni Görev Ekle
+    @PostMapping
+    public Todo createTodo(@RequestBody Todo todo) {
+        return todoRepository.save(todo);
+    }
 
-	// 4. GÖREV DURUMUNU DEĞİŞTİR (PATCH) -> localhost:8080/api/todos/1
-	@PatchMapping("/{id}")
-	public Todo toggleTodoStatus(@PathVariable Long id) {
-		for (Todo todo : todoList) {
-			if (todo.getId().equals(id)) {
-				// true ise false, false ise true yapar (Tersine çevirir)
-				todo.setCompleted(!todo.isCompleted());
-				return todo;
-			}
-		}
-		return null; // Görev listede yoksa boş döner
-	}
+    // 3. Görevi Güncelle
+    @PutMapping("/{id}")
+    public Todo updateTodo(@PathVariable Long id, @RequestBody Todo todoDetails) {
+        Todo todo = todoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Görev bulunamadı! ID: " + id));
+        
+        todo.setTitle(todoDetails.getTitle());
+        todo.setCompleted(todoDetails.isCompleted());
+        
+        return todoRepository.save(todo);
+    }
+
+    // 4. Görevi Sil
+    @DeleteMapping("/{id}")
+    public String deleteTodo(@PathVariable Long id) {
+        Todo todo = todoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Görev bulunamadı! ID: " + id));
+        
+        todoRepository.delete(todo);
+        return id + " ID'li görev başarıyla silindi!";
+    }
 }
