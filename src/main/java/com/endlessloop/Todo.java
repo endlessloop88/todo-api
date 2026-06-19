@@ -4,26 +4,25 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-@Entity 
+@Entity
+@Table(name = "todo")
 public class Todo {
 
-    @Id 
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
+    @NotBlank(message = "Görev başlığı boş bırakılamaz!")
+    @Size(min = 3, max = 100, message = "Görev başlığı 3 ile 100 karakter arasında olmalıdır!")
     private String title;
+
     private boolean completed;
 
-    public Todo() {
-    }
-
-    public Todo(Long id, String title, boolean completed) {
-        this.id = id;
-        this.title = title;
-        this.completed = completed;
-    }
-
+    // Getter ve Setter Metotları
     public Long getId() {
         return id;
     }
