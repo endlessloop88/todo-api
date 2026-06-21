@@ -16,7 +16,7 @@ public class Todo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Görev başlığı boş bırakılamaz!")
+    @NotBlank(message = "Gorev basligi bos birakilamaz!")
     @Size(min = 3, max = 100, message = "Görev başlığı 3 ile 100 karakter arasında olmalıdır!")
     private String title;
 
