@@ -3,41 +3,40 @@ package com.endlessloop;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@SuppressWarnings("null") // VS Code'un o pimpirikli sarı uyarılarını susturmak için
 public class TodoService {
 
     @Autowired
     private TodoRepository todoRepository;
 
-    // 1. Tüm görevleri listeleme mantığı
+    // Tüm görevleri listeleme (GET)
     public List<Todo> getAllTodos() {
         return todoRepository.findAll();
     }
 
-    // 2. Yeni görev ekleme mantığı
+    // Yeni görev ekleme (POST)
     public Todo createTodo(Todo todo) {
         return todoRepository.save(todo);
     }
 
-    // 3. Görev güncelleme mantığı
-    public Optional<Todo> updateTodo(Long id, Todo todoDetails) {
-        return todoRepository.findById(id)
-                .map(existingTodo -> {
-                    existingTodo.setTitle(todoDetails.getTitle());
-                    existingTodo.setCompleted(todoDetails.isCompleted());
-                    return todoRepository.save(existingTodo);
-                });
+    // Mevcut görevi güncelleme (PUT)
+    public Todo updateTodo(Long id, Todo updatedTodo) {
+        Todo existingTodo = todoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Gorev bulunamadi! ID: " + id));
+        
+        existingTodo.setTitle(updatedTodo.getTitle());
+        existingTodo.setCompleted(updatedTodo.isCompleted());
+        
+        return todoRepository.save(existingTodo);
     }
 
-    // 4. Görev silme mantığı
-    public boolean deleteTodo(Long id) {
-        return todoRepository.findById(id)
-                .map(todo -> {
-                    todoRepository.delete(todo);
-                    return true;
-                })
-                .orElse(false);
+    // Görev silme (DELETE)
+    public void deleteTodo(Long id) {
+        Todo existingTodo = todoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Silinecek gorev bulunamadi! ID: " + id));
+        
+        todoRepository.delete(existingTodo);
     }
 }

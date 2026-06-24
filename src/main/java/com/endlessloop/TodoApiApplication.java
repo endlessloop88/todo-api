@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-
 import java.util.List;
 
 @SpringBootApplication
@@ -18,32 +17,34 @@ public class TodoApiApplication {
     @Autowired
     private TodoService todoService;
 
-    public static void main(String[] eloquence) {
-        SpringApplication.run(TodoApiApplication.class, eloquence);
+    public static void main(String[] args) {
+        SpringApplication.run(TodoApiApplication.class, args);
     }
 
+    // GET ucu: http://localhost:8089/api/todos
     @GetMapping
     public List<Todo> getAllTodos() {
         return todoService.getAllTodos();
     }
 
+    // POST ucu: http://localhost:8089/api/todos
     @PostMapping
     public ResponseEntity<Todo> createTodo(@Valid @RequestBody Todo todo) {
-        return ResponseEntity.ok(todoService.createTodo(todo));
+        Todo savedTodo = todoService.createTodo(todo);
+        return ResponseEntity.ok(savedTodo);
     }
 
+    // PUT ucu: http://localhost:8089/api/todos/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @Valid @RequestBody Todo todoDetails) {
-        return todoService.updateTodo(id, todoDetails)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @Valid @RequestBody Todo todo) {
+        Todo updated = todoService.updateTodo(id, todo);
+        return ResponseEntity.ok(updated);
     }
 
+    // DELETE ucu: http://localhost:8089/api/todos/{id}
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
-        if (todoService.deleteTodo(id)) {
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<String> deleteTodo(@PathVariable Long id) {
+        todoService.deleteTodo(id);
+        return ResponseEntity.ok("Gorev basariyla silindi. ID: " + id);
     }
 }
