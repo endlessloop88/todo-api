@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@SuppressWarnings("null") // VS Code'un o pimpirikli sarı uyarılarını susturmak için
+@SuppressWarnings("null")
 public class TodoService {
 
     @Autowired
@@ -39,4 +39,14 @@ public class TodoService {
         
         todoRepository.delete(existingTodo);
     }
-}
+
+    // Sadece tamamlanmış görevleri getiren servis metodu
+    public List<Todo> getCompletedTodos() {
+        return todoRepository.findByCompletedTrue();
+    }
+
+    // Sadece tamamlanmamış görevleri getiren servis metodu
+    public List<Todo> getActiveTodos() {
+        return todoRepository.findByCompletedFalse();
+    }
+} // Sınıfın en sonundaki kapatma parantezi

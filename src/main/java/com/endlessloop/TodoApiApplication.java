@@ -46,5 +46,17 @@ public class TodoApiApplication {
     public ResponseEntity<String> deleteTodo(@PathVariable Long id) {
         todoService.deleteTodo(id);
         return ResponseEntity.ok("Gorev basariyla silindi. ID: " + id);
+  
+    }
+    // Sadece tamamlananları listeler: http://localhost:8089/api/todos/completed
+    @GetMapping("/completed")
+    public List<Todo> getCompletedTodos() {
+        return todoService.getCompletedTodos();
+    }
+
+    // Sadece aktif (tamamlanmamış) olanları listeler: http://localhost:8089/api/todos/active
+    @GetMapping("/active")
+    public List<Todo> getActiveTodos() {
+        return todoService.getActiveTodos();
     }
 }
