@@ -1,12 +1,7 @@
 package com.endlessloop;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "todo")
@@ -17,12 +12,27 @@ public class Todo {
     private Long id;
 
     @NotBlank(message = "Gorev basligi bos birakilamaz!")
-    @Size(min = 3, max = 100, message = "Görev başlığı 3 ile 100 karakter arasında olmalıdır!")
     private String title;
 
     private boolean completed;
 
-    // Getter ve Setter Metotları
+    // PostgreSQL'de user_id adında bir Foreign Key (ilişki kolonu) oluşturur
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
+
+    // 1. Boş Constructor (JPA için zorunlu)
+    public Todo() {
+    }
+
+    // 2. Parametreli Constructor
+    public Todo(String title, boolean completed) {
+        this.title = title;
+        this.completed = completed;
+    }
+
+    // --- GETTER VE SETTER METOTLARI ---
+
     public Long getId() {
         return id;
     }
@@ -45,5 +55,13 @@ public class Todo {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
