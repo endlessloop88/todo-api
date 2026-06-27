@@ -1,6 +1,7 @@
 package com.endlessloop;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @Entity
@@ -11,25 +12,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    private String isim;
+    private String ePosta;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id") // Veritabanında foreign key sütunu oluşturur
+    @JsonIgnoreProperties("kullanici") // Karşı taraftaki sonsuz döngüyü engeller
+    private List<Todo> herkes;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Todo> todos;
+    public User() {}
 
-    // Getter ve Setter Metotları
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public List<Todo> getTodos() { return todos; }
-    public void setTodos(List<Todo> todos) { this.todos = todos; }
+    public String getIsim() { return isim; }
+    public void setIsim(String isim) { this.isim = isim; }
+    public String getEPosta() { return ePosta; }
+    public void setEPosta(String ePosta) { this.ePosta = ePosta; }
+    public List<Todo> getHerkes() { return herkes; }
+    public void setHerkes(List<Todo> herkes) { this.herkes = herkes; }
 }
