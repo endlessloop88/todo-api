@@ -1,34 +1,42 @@
-# 🚀 Todo API - Spring Boot Layered Architecture
+# 📝 Todo Management API (Spring Boot & PostgreSQL)
 
-Bu proje, kurumsal standartlara uygun olarak **Katmanlı Mimari (Layered Architecture)** prensipleriyle geliştirilmiş, veri doğrulama (validation) mekanizmalarına sahip gelişmiş bir RESTful Todo API projesidir.
+Bu proje, modern yazılım mimarilerine ve temiz kod (clean code) prensiplerine uygun olarak geliştirilmiş, ilişkisel veritabanı destekli bir **Görev Yönetimi (Todo Management) RESTful API** uygulamasıdır.
 
-## 🛠️ Kullanılan Teknolojiler & Kütüphaneler
-- **Java 17**
-- **Spring Boot 3.x**
-- **Spring Data JPA** (Veri Erişim Katmanı)
-- **Jakarta Validation** (Veri Doğrulama Katmanı)
-- **H2 Database** (In-Memory Veritabanı)
-- **Maven** (Bağımlılık Yönetimi)
+---
 
-## 🏗️ Mimari Yapı (Layered Architecture)
-Proje, modülerlik, okunabilirlik ve sürdürülebilirlik odaklı 3 temel katmandan oluşmaktadır:
-1. **Controller Katmanı (`TodoApiApplication`):** REST endpoint'lerini barındırır, dış dünyadan gelen istekleri karşılar ve veri doğrulama (Validation) filtresini işletir.
-2. **Service Katmanı (`TodoService`):** İş mantığının (Business Logic) döndüğü, kurumsal kuralların uygulandığı ana yönetim katmandır.
-3. **Repository Katmanı (`TodoRepository`):** Veritabanı ile doğrudan güvenli iletişim kuran ve CRUD operasyonlarını yöneten soyutlama katmandır.
+## 🛠️ Kullanılan Teknolojiler & Araçlar
+* **Backend Framework:** Java 17 / Spring Boot 3.x
+* **Veri Erişimi & ORM:** Spring Data JPA / Hibernate
+* **Veritabanı:** PostgreSQL
+* **API Test & Dokümantasyon:** Postman / Swagger UI
+* **Bağımlılık Yönetimi:** Maven
+* **Versiyon Kontrolü:** Git / GitHub
 
-## 🔐 Veri Doğrulama (Validation) Kuralları
-Sistem güvenliği ve veri tutarlılığı için gelen istekler şu filtrelere tabi tutulur:
-- `title`: Boş bırakılamaz (`@NotBlank`) ve minimum 3, maksimum 100 karakter olmalıdır (`@Size`).
+---
 
-## 🛣️ API Uçları (Endpoints)
-| Metot | Endpoint | Açıklama |
+## 🚀 Öne Çıkan Teknik Özellikler & Çözümler
+
+* **Katmanlı Mimari (Layered Architecture):** Proje; `Controller`, `Service`, `Repository` ve `Entity` katmanlarına ayrılarak loose coupling (gevşek bağlılık) ve yüksek sürdürülebilirlik prensiplerine uygun olarak inşa edilmiştir.
+* **Sonsuz Döngü (Infinite Recursion) Optimizasyonu:** İlişkisel veritabanı modellerinde (One-to-Many / Many-to-One) sıkça karşılaşılan JSON serileştirme döngüleri, `@JsonIgnoreProperties` ve DTO (Data Transfer Object) mimarisi kullanılarak optimize edilmiştir.
+* **Veri Doğrulama (Validation):** İstek gövdelerindeki verilerin doğruluğu Spring Validation mimarisiyle kontrol altına alınmıştır.
+
+---
+
+## 🔗 API Uç Noktaları (Endpoints)
+
+### Görev (Todo) Yönetimi
+| Metot | Uç Nokta (Endpoint) | Açıklama |
 | :--- | :--- | :--- |
-| **GET** | `/api/todos` | Sistemdeki tüm görevleri listeler. |
-| **POST** | `/api/todos` | Yeni bir görev ekler (Doğrulama filtresinden geçer). |
-| **PUT** | `/api/todos/{id}` | Belirtilen ID'ye sahip görevi günceller. |
-| **DELETE**| `/api/todos/{id}` | Belirtilen ID'ye sahip görevi siler. |
+| **GET** | `/api/todos` | Tüm görevleri listeler. |
+| **GET** | `/api/todos/{id}` | ID'ye göre belirli bir görevi getirir. |
+| **POST** | `/api/todos` | Yeni bir görev oluşturur. |
+| **PUT** | `/api/todos/{id}` | Mevcut bir görevi günceller. |
+| **DELETE** | `/api/todos/{id}` | Belirli bir görevi siler. |
 
-## 🚀 Projeyi Yerelde Çalıştırma
-Projeyi klonladıktan sonra ana dizinde terminalden şu komutu çalıştırarak uygulamayı `8089` portu üzerinden ayağa kaldırabilirsiniz:
-```bash
-./mvnw clean spring-boot:run
+---
+
+## 💻 Projeyi Yerelde Çalıştırma
+
+1. Projeyi klonlayın:
+   ```bash
+   git clone [https://github.com/KULLANICI_ADIN/PROJE_ADIN.git](https://github.com/KULLANICI_ADIN/PROJE_ADIN.git)
