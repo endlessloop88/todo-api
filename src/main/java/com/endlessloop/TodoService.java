@@ -1,52 +1,37 @@
 package com.endlessloop;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@SuppressWarnings("null")
 public class TodoService {
 
-    @Autowired
-    private TodoRepository todoRepository;
+    private final TodoRepository todoRepository;
 
-    // Tüm görevleri listeleme (GET)
-    public List<Todo> getAllTodos() {
-        return todoRepository.findAll();
+    public TodoService(TodoRepository todoRepository) {
+        this.todoRepository = todoRepository;
     }
 
-    // Yeni görev ekleme (POST)
-    public Todo createTodo(Todo todo) {
-        return todoRepository.save(todo);
-    }
-
-    // Mevcut görevi güncelleme (PUT)
-    public Todo updateTodo(Long id, Todo updatedTodo) {
-        Todo existingTodo = todoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Gorev bulunamadi! ID: " + id));
+    /**
+     * DTO'dan gelen temiz veriyi alır, Entity'ye dönüştürür ve kaydeder.
+     */
+    public void saveTodo(TodoRequest todoRequest) {
+        Todo todo = new Todo();
+        todo.setTitle(todoRequest.getTitle());
+        todo.setCompleted(false);
         
-        existingTodo.setTitle(updatedTodo.getTitle());
-        existingTodo.setCompleted(updatedTodo.isCompleted());
-        
-        return todoRepository.save(existingTodo);
+        todoRepository.save(todo);
     }
 
-    // Görev silme (DELETE)
-    public void deleteTodo(Long id) {
-        Todo existingTodo = todoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Silinecek gorev bulunamadi! ID: " + id));
-        
-        todoRepository.delete(existingTodo);
-    }
+    /**
+     * Todo'yu güvenli ve kilitli bir şekilde tamamlandı yapar.
+     */
+    @Transactional
+    public void completeTodo(Long todoId) {
+        Todo todo = todoRepository.findByIdWithLock(todoId)
+                .orElseThrow(() -> new RuntimeException("Todo bulunamadı!"));
 
-    // Sadece tamamlanmış görevleri getiren servis metodu
-    public List<Todo> getCompletedTodos() {
-        return todoRepository.findByCompletedTrue();
+        todo.setCompleted(true);
+        todoRepository.save(todo);
     }
-
-    // Sadece tamamlanmamış görevleri getiren servis metodu
-    public List<Todo> getActiveTodos() {
-        return todoRepository.findByCompletedFalse();
-    }
-} // Sınıfın en sonundaki kapatma parantezi
+}
