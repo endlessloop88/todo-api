@@ -1,0 +1,38 @@
+package com.endlessloop.idempotency;
+
+import org.springframework.stereotype.Component;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
+
+@Component // Spring'in bu sınıfı yönetmesini sağlıyoruz
+public class IdempotencyService {
+
+    // Gerçek projede burası Redis olur, mülakat simülasyonu için 
+    // thread-safe (eşzamanlılığa uygun) ConcurrentHashMap kullanıyoruz!
+    private final Map<String, Boolean> tokenCache = new ConcurrentHashMap<>();
+
+    /**
+     * Gelen anahtarın daha önce kullanılıp kullanılmadığını kontrol eder.
+     * @param key Benzersiz istek anahtarı (UUID)
+     * @return true eğer istek benzersizse (ilk defa geliyorsa), false eğer yinelenen istekse
+     */
+    public boolean isUniqueRequest(String key) {
+        if (key == null || key.trim().isEmpty()) {
+            throw new IllegalArgumentException("Idempotency-Key boş olamaz!");
+        }
+
+        // putIfAbsent: Eğer key yoksa ekler ve null döner. Varsa eski değeri döner.
+        // Bu işlem atomiktir (Atomic), yani Multithreading ortamında güvenlidir!
+        Boolean isAlreadyExists = tokenCache.putIfAbsent(key, true);
+        
+        // Eğer daha önce varsa isAlreadyExists true döner, biz benzersiz olmadığı için false döneriz.
+        return isAlreadyExists == null;
+    }
+
+    /**
+     * Test veya işlem başarısız olduğunda anahtarı temizlemek için temizleme metodu
+     */
+    public void invalidateKey(String key) {
+        tokenCache.remove(key);
+    }
+}
